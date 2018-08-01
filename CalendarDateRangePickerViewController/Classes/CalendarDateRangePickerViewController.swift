@@ -22,7 +22,9 @@ public class CalendarDateRangePickerViewController: UICollectionViewController {
     
     let itemsPerRow = 7
     let itemHeight: CGFloat = 40
-    let collectionViewInsets = UIEdgeInsets(top: 0, left: 25, bottom: 0, right: 25)
+    var insetsIsCalculated:Bool = false
+    var didScrollToDate = false
+    var collectionViewInsets = UIEdgeInsets(top: 0, left: 25, bottom: 0, right: 25)
     
     public var minimumDate: Date!
     public var maximumDate: Date!
@@ -141,6 +143,13 @@ extension CalendarDateRangePickerViewController {
         }
     }
     
+    override public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if !didScrollToDate {
+            collectionView.scrollToItem(at: getIndexPathForDate(date:selectedStartDate!), at: .centeredVertically, animated: false)
+            didScrollToDate = true
+        }
+    }
+    
 }
 
 extension CalendarDateRangePickerViewController : UICollectionViewDelegateFlowLayout {
@@ -173,10 +182,50 @@ extension CalendarDateRangePickerViewController : UICollectionViewDelegateFlowLa
     public func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        if(!insetsIsCalculated) {
+            calculateCorrectInsets(collectionView: collectionView)
+            insetsIsCalculated = true
+        }
+        
         let padding = collectionViewInsets.left + collectionViewInsets.right
         let availableWidth = view.frame.width - padding
         let itemWidth = availableWidth / CGFloat(itemsPerRow)
         return CGSize(width: itemWidth, height: itemHeight)
+    }
+    
+    private func calculateCorrectInsets(collectionView:UICollectionView) {
+        
+        let iterator:CGFloat = 1
+        let initalPadding = collectionViewInsets.left + collectionViewInsets.right
+        
+        let padding = calculatePadding(collectionViewWidth: view.frame.width, initialPadding: initalPadding, iterator: iterator)
+        let ratio = padding / (collectionViewInsets.left + collectionViewInsets.right)
+        
+        if (ratio == CGFloat.infinity) {
+            collectionViewInsets.left = padding / 2
+            collectionViewInsets.right = padding / 2
+        } else {
+            collectionViewInsets.left *= ratio
+            collectionViewInsets.right *= ratio
+        }
+        
+        collectionView.contentInset = collectionViewInsets
+    }
+    
+    public func calculatePadding(collectionViewWidth:CGFloat, initialPadding:CGFloat, iterator:CGFloat) -> CGFloat {
+        let positive = initialPadding >= 0
+        var availableWidth = collectionViewWidth - (positive ? initialPadding : -initialPadding)
+        while(availableWidth.truncatingRemainder(dividingBy: CGFloat(itemsPerRow)) != 0) {
+            availableWidth += positive ? iterator : -iterator
+        }
+        
+        let padding = view.frame.width - availableWidth
+        if (0 > padding) {
+            return calculatePadding(collectionViewWidth: collectionViewWidth, initialPadding: padding, iterator: iterator)
+        }
+        
+        return padding
     }
     
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
@@ -217,7 +266,14 @@ extension CalendarDateRangePickerViewController {
         var components = DateComponents()
         components.calendar = Calendar.current
         components.weekday = weekday
-        let date = Calendar.current.nextDate(after: Date(), matching: components, matchingPolicy: Calendar.MatchingPolicy.strict)
+        var date:Date? = nil
+        
+        if(isFirstWeekDaySunday()) {
+            date = Calendar.current.nextDate(after: Date(), matching: components, matchingPolicy: Calendar.MatchingPolicy.strict)
+        } else {
+            date = getWeekdayForMondayAsFistDayOfWeek(weekday:weekday)
+        }
+
         if date == nil {
             return "E"
         }
@@ -227,11 +283,34 @@ extension CalendarDateRangePickerViewController {
     }
     
     func getWeekday(date: Date) -> Int {
-        return Calendar.current.dateComponents([.weekday], from: date).weekday!
+        let weekday = Calendar.current.dateComponents([.weekday], from: date).weekday!
+        
+        if(isFirstWeekDaySunday()) {
+            return weekday
+        }
+        
+        if(weekday == 1) {
+            return 7
+        }
+        if(weekday == 7) {
+            return 0
+        }
+        
+        return weekday - 1
     }
     
     func getNumberOfDaysInMonth(date: Date) -> Int {
         return Calendar.current.range(of: .day, in: .month, for: date)!.count
+    }
+    
+    func getIndexPathForDate(date: Date) -> IndexPath {
+        var sectionMonht = Calendar.current.dateComponents([.month], from: minimumDate, to: date).month!
+        let itemDay = Calendar.current.component(.day, from: date) - 1
+        if(itemDay == 0) {
+            sectionMonht += 1 // Fix 1th day appereace
+        }
+        let indexPath = IndexPath(item:itemDay, section: sectionMonht)
+        return indexPath
     }
     
     func getDate(dayOfMonth: Int, section: Int) -> Date {
@@ -248,4 +327,13 @@ extension CalendarDateRangePickerViewController {
         return Calendar.current.compare(dateA, to: dateB, toGranularity: .day) == ComparisonResult.orderedAscending
     }
     
+    func isFirstWeekDaySunday() -> Bool {
+        return Calendar.current.firstWeekday == 1
+    }
+    
+    func getWeekdayForMondayAsFistDayOfWeek(weekday: Int) -> Date? {
+        let gregorian = Calendar(identifier: .gregorian)
+        guard let sunday = gregorian.date(from: gregorian.dateComponents([.yearForWeekOfYear, .weekOfYear], from: Date())) else { return nil }
+        return gregorian.date(byAdding: .day, value: weekday, to: sunday)
+    }
 }
