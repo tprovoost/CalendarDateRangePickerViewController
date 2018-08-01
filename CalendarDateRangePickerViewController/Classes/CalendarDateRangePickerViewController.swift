@@ -10,7 +10,7 @@ import UIKit
 
 public protocol CalendarDateRangePickerViewControllerDelegate {
     func didCancelPickingDateRange()
-    func didPickDateRange(startDate: Date!, endDate: Date!)
+    func didPickDateRange(startDate: Date?, endDate: Date?)
 }
 
 public class CalendarDateRangePickerViewController: UICollectionViewController {
@@ -57,7 +57,7 @@ public class CalendarDateRangePickerViewController: UICollectionViewController {
         
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(CalendarDateRangePickerViewController.didTapCancel))
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(CalendarDateRangePickerViewController.didTapDone))
-        self.navigationItem.rightBarButtonItem?.isEnabled = selectedStartDate != nil && selectedEndDate != nil
+        self.navigationItem.rightBarButtonItem?.isEnabled = true
     }
     
     func didTapCancel() {
@@ -65,10 +65,7 @@ public class CalendarDateRangePickerViewController: UICollectionViewController {
     }
     
     func didTapDone() {
-        if selectedStartDate == nil || selectedEndDate == nil {
-            return
-        }
-        delegate.didPickDateRange(startDate: selectedStartDate!, endDate: selectedEndDate!)
+        delegate.didPickDateRange(startDate: selectedStartDate, endDate: selectedEndDate)
     }
     
 }
@@ -145,7 +142,7 @@ extension CalendarDateRangePickerViewController {
     
     override public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if !didScrollToDate {
-            collectionView.scrollToItem(at: getIndexPathForDate(date:selectedStartDate!), at: .centeredVertically, animated: false)
+            collectionView.scrollToItem(at: getIndexPathForDate(date:selectedStartDate == nil ? Date() : selectedStartDate!), at: .centeredVertically, animated: false)
             didScrollToDate = true
         }
     }
@@ -164,10 +161,13 @@ extension CalendarDateRangePickerViewController : UICollectionViewDelegateFlowLa
         }
         if selectedStartDate == nil {
             selectedStartDate = cell.date
+            self.navigationItem.rightBarButtonItem?.isEnabled = true
         } else if selectedEndDate == nil {
             if isBefore(dateA: selectedStartDate!, dateB: cell.date!) {
                 selectedEndDate = cell.date
-                self.navigationItem.rightBarButtonItem?.isEnabled = true
+            } else if areSameDay(dateA: selectedStartDate!, dateB: cell.date!) {
+                // If a cell before the currently selected start date is selected then just set it as the new start date
+                selectedStartDate = nil
             } else {
                 // If a cell before the currently selected start date is selected then just set it as the new start date
                 selectedStartDate = cell.date
