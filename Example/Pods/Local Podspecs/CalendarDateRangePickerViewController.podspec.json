@@ -1,19 +1,19 @@
 {
   "name": "CalendarDateRangePickerViewController",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "summary": "A calendar date range picker view controller in Swift for iOS.",
   "description": "This is a calendar date range picker view controller written in Swift for iOS. The typical use case is where you want the user to input a date range, i.e. a start date and an end date. This view controller allows this in an intuitive way, and is easy to use by implementing the delegate methods. See the example project for a taste.",
-  "homepage": "https://github.com/miraan/CalendarDateRangePickerViewController",
+  "homepage": "https://github.com/tprovoost/CalendarDateRangePickerViewController",
   "license": {
     "type": "MIT",
     "file": "LICENSE"
   },
   "authors": {
-    "miraan": "miraan@triprapp.com"
+    "tprovoost": "tprovoost@triprapp.com"
   },
   "source": {
-    "git": "https://github.com/miraan/CalendarDateRangePickerViewController.git",
-    "tag": "0.1.0"
+    "git": "https://github.com/tprovoost/CalendarDateRangePickerViewController.git",
+    "tag": "0.2.0"
   },
   "platforms": {
     "ios": "8.0"

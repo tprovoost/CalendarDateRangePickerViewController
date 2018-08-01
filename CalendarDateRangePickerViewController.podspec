@@ -21,11 +21,11 @@ Pod::Spec.new do |s|
 This is a calendar date range picker view controller written in Swift for iOS. The typical use case is where you want the user to input a date range, i.e. a start date and an end date. This view controller allows this in an intuitive way, and is easy to use by implementing the delegate methods. See the example project for a taste.
                        DESC
 
-  s.homepage         = 'https://github.com/miraan/CalendarDateRangePickerViewController'
+  s.homepage         = 'https://github.com/tprovoost/CalendarDateRangePickerViewController'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'miraan' => 'miraan@triprapp.com' }
-  s.source           = { :git => 'https://github.com/miraan/CalendarDateRangePickerViewController.git', :tag => s.version.to_s }
+  s.author           = { 'tprovoost' => 'thomas@cover42.com' }
+  s.source           = { :git => 'https://github.com/tprovoost/CalendarDateRangePickerViewController.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '8.0'
