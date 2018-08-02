@@ -34,6 +34,8 @@ public class CalendarDateRangePickerViewController: UICollectionViewController {
     
     public var selectedColor = UIColor(red: 66/255.0, green: 150/255.0, blue: 240/255.0, alpha: 1.0)
     public var titleText = "Select Dates"
+    public var cancelTitle = "Cancel"
+    public var doneTitle = "Done"
 
     override public func viewDidLoad() {
         super.viewDidLoad()
@@ -55,8 +57,8 @@ public class CalendarDateRangePickerViewController: UICollectionViewController {
             maximumDate = Calendar.current.date(byAdding: .year, value: 3, to: minimumDate)
         }
         
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(CalendarDateRangePickerViewController.didTapCancel))
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(CalendarDateRangePickerViewController.didTapDone))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: cancelTitle, style: .plain, target: self, action: #selector(CalendarDateRangePickerViewController.didTapCancel))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: doneTitle, style: .done, target: self, action: #selector(CalendarDateRangePickerViewController.didTapDone))
         self.navigationItem.rightBarButtonItem?.isEnabled = true
     }
     
@@ -103,6 +105,10 @@ extension CalendarDateRangePickerViewController {
             cell.label.text = "\(dayOfMonth)"
             
             if isBefore(dateA: date, dateB: minimumDate) {
+                cell.disable()
+            }
+            
+            if isAfter(dateA: date, dateB: maximumDate) {
                 cell.disable()
             }
             
@@ -325,6 +331,10 @@ extension CalendarDateRangePickerViewController {
     
     func isBefore(dateA: Date, dateB: Date) -> Bool {
         return Calendar.current.compare(dateA, to: dateB, toGranularity: .day) == ComparisonResult.orderedAscending
+    }
+    
+    func isAfter(dateA: Date, dateB: Date) -> Bool {
+        return Calendar.current.compare(dateA, to: dateB, toGranularity: .day) == ComparisonResult.orderedDescending
     }
     
     func isFirstWeekDaySunday() -> Bool {

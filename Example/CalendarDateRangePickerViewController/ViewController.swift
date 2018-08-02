@@ -16,14 +16,15 @@ class ViewController: UIViewController {
     @IBAction func didTapButton(_ sender: Any) {
         let dateRangePickerViewController = CalendarDateRangePickerViewController(collectionViewLayout: UICollectionViewFlowLayout())
         dateRangePickerViewController.delegate = self
-        dateRangePickerViewController.minimumDate = Date()
-        dateRangePickerViewController.maximumDate = Calendar.current.date(byAdding: .year, value: 2, to: Date())
+        dateRangePickerViewController.minimumDate = Calendar.current.date(byAdding: .year, value: -1, to: Date())
+        dateRangePickerViewController.maximumDate = Date()
         dateRangePickerViewController.selectedColor = UIColor.red
         dateRangePickerViewController.titleText = "Select Date Range"
+        dateRangePickerViewController.cancelTitle = "Cancel"
+        dateRangePickerViewController.doneTitle = "Done"
         let navigationController = UINavigationController(rootViewController: dateRangePickerViewController)
         self.navigationController?.present(navigationController, animated: true, completion: nil)
     }
-    
 }
 
 extension ViewController : CalendarDateRangePickerViewControllerDelegate {

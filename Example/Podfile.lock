@@ -1,5 +1,5 @@
 PODS:
-  - CalendarDateRangePickerViewController (0.2.0)
+  - CalendarDateRangePickerViewController (0.2.1)
 
 DEPENDENCIES:
   - CalendarDateRangePickerViewController (from `../`)
@@ -9,7 +9,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  CalendarDateRangePickerViewController: c84d69f9bcec5aab12e8d9d5e90c1284ce50889a
+  CalendarDateRangePickerViewController: 6f5e9d71fa2d3e68bf0c03f39d49c69f157e92fb
 
 PODFILE CHECKSUM: 2451ae3089d0abca27169c63b3f8b007c0f69b64
 
