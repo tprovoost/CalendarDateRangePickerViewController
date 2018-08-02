@@ -165,6 +165,9 @@ extension CalendarDateRangePickerViewController : UICollectionViewDelegateFlowLa
         if isBefore(dateA: cell.date!, dateB: minimumDate) {
             return
         }
+        if isAfter(dateA: cell.date!, dateB: maximumDate) {
+            return
+        }
         if selectedStartDate == nil {
             selectedStartDate = cell.date
             self.navigationItem.rightBarButtonItem?.isEnabled = true
